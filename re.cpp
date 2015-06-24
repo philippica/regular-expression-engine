@@ -4,13 +4,14 @@
 #include<set>
 #include<map>
 #include<queue>
-#define maxn 1000
+#define maxn 10000
 using namespace std;
 int valid[maxn],p[maxn],h=0,p_num = 0,visit[maxn],new_p=0;
 int head[maxn],next[maxn],now,point[maxn],en[maxn];
 char value[maxn];
 int head2[maxn],next2[maxn],now2,point2[maxn],en2[maxn];
 char value2[maxn];
+char gang[10];
 struct Expression
 {
 	int error;
@@ -79,6 +80,10 @@ void errase(int start,int end)
 	en[end] = 1;
 	for(int i = 1; i <= h; i++)
 	{
+        if(i==37)
+        {
+            puts("12");
+        }
 		memset(visit,0,sizeof(visit));
 		dfs(p[i], p[i]);
 	}
@@ -163,7 +168,8 @@ bool IsAlg(const char ch)
 
 Expression GetTerm(char*& Stream)
 {
-	char* Read = Stream;
+	char* Read = Stream ;
+	const char* gg = gang;
 	Expression ret;
 	while(*Read == ' ')Read++;
 	if(IsAlg(*Read))
@@ -190,6 +196,34 @@ Expression GetTerm(char*& Stream)
             }
             else ret.error = 1;
         }
+	}
+	else if (Is(Read,"["))
+	{
+		char ww[] = "(a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)";
+		char WW[] = "(A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z)";
+		char num[] = "(0|1|2|3|4|5|6|7|8|9)";
+		if(Is(Read,"a") && Is(Read,"-") && Is(Read,"z") && Is(Read, "]"))
+		{
+			char* ip = ww;
+			ret = GetTemp(ip);
+		}
+		else if(Is(Read,"A") && Is(Read,"-") && Is(Read,"Z") && Is(Read, "]"))
+		{
+			char* ip = WW;
+			ret = GetTemp(ip);
+		}
+		else if(Is(Read,"0") && Is(Read,"-") && Is(Read,"9") && Is(Read,"]"))
+		{
+			char* ip = num;
+			ret = GetTemp(ip);
+		}
+	}
+	else if(Is(Read, gg))
+	{
+		puts("in");
+		char ww[] = "([0-9]|[a-z]|[A-Z])";
+		char* ip = ww;
+		ret = GetTemp(ip);
 	}
 	else
 	{
@@ -264,6 +298,8 @@ Expression GetTemp(char*& Stream)
 
 Expression GetExp(char*& Stream)
 {
+	gang[0] = '\\';
+	gang[1] = '\0';
 	memset(head,0,sizeof(head));
 	memset(head2,0,sizeof(head));
 	memset(en,0,sizeof(en));
