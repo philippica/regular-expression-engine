@@ -8,7 +8,7 @@ Expression::Expression():
 {
 }
 
-Exp::Expression GetTemp(char*& Stream)
+Expression Exp::GetTemp(char*& Stream)
 {
 	char* Read = Stream;
 	Expression term = GetFactor(Read), ret;
@@ -33,7 +33,7 @@ Exp::Expression GetTemp(char*& Stream)
 	return ret;
 }
 
-Exp::Expression GetFactor(char*& Stream)
+Expression Exp::GetFactor(char*& Stream)
 {
 	char* Read = Stream;
 	Expression ret = GetTerm(Read);
@@ -60,7 +60,7 @@ Exp::Expression GetFactor(char*& Stream)
 }
 
 
-Exp::Expression GetExp(char*& Stream)
+Expression Exp::GetExp(char*& Stream)
 {
 	gang[0] = '\\';
 	gang[1] = '\0';
@@ -84,8 +84,13 @@ Exp::Expression GetExp(char*& Stream)
     return ret;
 }
 
+Expression Exp::getExtern(char*& Stream)
+{
+}
 
-Exp::Expression GetTerm(char*& Stream)
+
+
+Expression Exp::getExtern(char*& Stream)
 {
 	char* Read = Stream ;
 	const char* gg = gang;
