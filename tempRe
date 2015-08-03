@@ -14,8 +14,9 @@ struct Node
     Node* nex;
 };
 Node* Head[maxn] = {NULL};
+Node* Head2[maxn] = {NULL};
 
-void g_add(int x,int y,char v)
+void add(int x,int y,char v)
 {
     Node* p = new Node;
     p -> nex = Head[x];
@@ -23,31 +24,40 @@ void g_add(int x,int y,char v)
     p -> data = v;
     Head[x] = p;
 }
+void add2(int x,int y,char v)
+{
+    Node* p = new Node;
+    p -> nex = Head2[x];
+    p -> point = y;
+    p -> data = v;
+    Head2[x] = p;
+}
+
 
 void distroy()
 {
-	for(int i = 0; i < maxn; i++)
-	{
-		for(Node* j = Head[i]; j != NULL;)
-		{
-			Node* p = j -> nex;
-			delete p;
-			j = p;
-		}
-	}
+    for(int i = 0; i < maxn; i++)
+    {
+        for(Node* j = Head[i]; j != NULL;)
+        {
+            Node* p = j -> nex;
+            delete p;
+            j = p;
+        }
+    }
 }
 
-void g_del(Node*& head, Node*& no, Node*& pre)
+void del(Node*& head, Node*& no, Node*& pre)
 {
-	if(no == pre)
-	{
-		head = pre;
-	}
-	else
-	{
-		pre -> nex = no -> nex;
-		delete no;
-	}
+    if(no == pre)
+    {
+        head = pre;
+    }
+    else
+    {
+        pre -> nex = no -> nex;
+        delete no;
+    }
 }
 
 
@@ -78,6 +88,7 @@ end(0)
 
 Expression GetTemp(char*& Stream);
 
+/*
 void add(int x,int y,char v)
 {
 
@@ -86,6 +97,8 @@ void add(int x,int y,char v)
     point[now] = y;
     value[now] = v;
 }
+*/
+/*
 void add2(int x,int y,char v)
 {
     next2[++now2] = head2[x];
@@ -93,11 +106,11 @@ void add2(int x,int y,char v)
     point2[now2] = y;
     value2[now2] = v;
 }
-
+*/
 
 void dfs(int start,int k)
 {
-	for(Node* i = Head[k]; i != NULL; i = i->nex)
+    for(Node* i = Head[k]; i != NULL; i = i->nex)
     {
         int u = i -> point;
         if (visit[u])continue;
@@ -115,17 +128,7 @@ void dfs(int start,int k)
 }
 
 
-void del(int x,int k,int pre)
-{
-    if(k==pre)
-    {
-        head[x] = next[k];
-    }
-    else
-    {
-        next[pre] = next[k];
-    }
-}
+
 
 void errase(int start,int end)
 {
@@ -143,11 +146,11 @@ void errase(int start,int end)
     }
     for(int i = 1; i <= h; i++)
     {
-        for(Node *j = head[p[i]], *pre = head[p[i]]; j != NULL; pre = j,j = j -> nex)
+        for(Node *j = Head[p[i]], *pre = Head[p[i]]; j != NULL; pre = j,j = j -> nex)
         {
             if (!valid[j -> point] || j -> data == '@')
             {
-                del(p[i],j,pre);
+                del(Head[p[i]],j,pre);
                 j = pre;
             }
         }
@@ -172,14 +175,14 @@ void Nfa_To_Dfa(int start)
         for(it = fron.begin(); it != fron.end(); it++)
         {
             int v = *it;
-            for(int i = head[v]; i; i = next[i])
+            for (Node* i = Head[v]; i != NULL; i = i -> nex)
             {
-                int u = point[i];
+                int u = i -> point;
                 if(en[u])
                 {
-                    f[(int)value[i]] = 1;
+                    f[(int)i -> data] = 1;
                 }
-                alg[(int)value[i]].insert(u);
+                alg[(int)i -> data].insert(u);
             }
         }
         int temp = set_set[fron];
@@ -401,10 +404,10 @@ bool match(Expression Re,char* Text)
     for(;;)
     {
         int flag = 0;
-        for(int i = head[p]; i; i = next[i])
+        for(Node* i = Head[p]; i != NULL; i = i -> nex)
         {
-            int u = point[i];
-            if (value[i] == *Read)
+            int u = i -> point;
+            if (i -> data == *Read)
             {
                 flag = 1;
                 p = u;
@@ -430,6 +433,6 @@ int main()
         char *pp = ch;
         if(match(GetExp(pp),text))puts("match");else puts("error");
         break;
-    } 
+    }
     return 0;
 }
