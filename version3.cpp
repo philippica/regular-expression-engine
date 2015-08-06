@@ -17,10 +17,21 @@ Node* Head[maxn] = {NULL};
 Node* Head2[maxn] = {NULL};
 int node_num;
 
+void print()
+{
+    for(int i=1;i<maxn;i++)
+    {
+        for(Node* j = Head[i]; j != NULL; j = j -> nex)
+        {
+            printf("%d %d %c\n",i,j->point,j->data);
+        }
+    }
+    puts("");
+}
+
 void add(int x,int y,char v,Node** Head)
 {
-
-    printf("add %d %d %c\n", x,y,v);
+    printf("add %d %d %c\n",x,y,v);
     Node* p = new Node;
     p -> nex = Head[x];
     p -> point = y;
@@ -45,16 +56,19 @@ void destroy(Node** Head)
 
 void del(Node*& head, Node*& no, Node*& pre)
 {
-    if(no == pre)
+    if(no == head)
     {
         Node* p = head->nex;
         delete head;
         head = p;
+        no = p;
+        pre = no;
     }
     else
     {
         pre -> nex = no -> nex;
         delete no;
+        no=pre -> nex;
     }
 }
 
@@ -118,15 +132,21 @@ void errase(int start,int end)
         memset(visit,0,sizeof(visit));
         dfs(p[i], p[i]);
     }
-    for(int i = 1; i <= h; i++)
+    for(int i = 1; i <= p_num; i++)
     {
-        for(Node *j = Head[p[i]], *pre = Head[p[i]]; j != NULL; pre = j,j = j -> nex)
+        for(Node *j = Head[i], *pre = Head[i]; j != NULL;)
         {
-            if (!valid[j -> point] || j -> data == '@')
+            if (!valid[j -> point] || j -> data == '@' || !valid[i])
             {
-            printf("destroy %d %d %c\n",p[i],j -> point,j->data);
-                del(Head[p[i]],j,pre);
-                j = pre;
+                printf("destroy %d %d %c\n",i,j -> point,j->data);
+                del(Head[i],j,pre);
+                //j = NULL;
+                print();
+            }
+            else
+            {
+                pre = j;
+                j = j -> nex;
             }
         }
     }
@@ -357,12 +377,14 @@ Expression GetExp(char*& Stream)
     new_p=0;
     h=0,p_num = 0;
     Expression ret = GetTemp(Stream);
+    print();
     errase(ret.start,ret.end);
+    print();
     Nfa_To_Dfa(ret.start);
     ret.start = 1;
     printf("%d\n",node_num);
     destroy(Head);
-    destroy(Head2);
+    //destroy(Head2);
     printf("%d\n",node_num);
     memcpy(Head,Head2,sizeof(Head));
     memcpy(en,en2,sizeof(en));
