@@ -16,6 +16,23 @@ struct Node
 Node* Head[maxn] = {NULL};
 Node* Head2[maxn] = {NULL};
 int node_num;
+struct Expression
+{
+    int error;
+    int start;
+    int end;
+    Expression();
+};
+
+
+Expression::Expression():
+error(0),
+start(0),
+end(0)
+{
+}
+
+
 
 void print()
 {
@@ -25,18 +42,25 @@ void print()
         {
             printf("%d %d %c\n",i,j->point,j->data);
         }
+        Head[i] = NULL;
     }
     puts("");
 }
 
+
 void add(int x,int y,char v,Node** Head)
 {
-    printf("add %d %d %c\n",x,y,v);
     Node* p = new Node;
+    node_num++;
     p -> nex = Head[x];
     p -> point = y;
     p -> data = v;
     Head[x] = p;
+}
+void m_delete(Node*& node)
+{
+    node_num--;
+    delete node;
 }
 
 void destroy(Node** Head)
@@ -47,8 +71,7 @@ void destroy(Node** Head)
         {
 
             Node* p = j -> nex;
-            printf("destroy %d %d %c\n",i,j -> point,j->data);
-            delete j;
+            m_delete(j);
             j = p;
         }
     }
@@ -59,7 +82,7 @@ void del(Node*& head, Node*& no, Node*& pre)
     if(no == head)
     {
         Node* p = head->nex;
-        delete head;
+        m_delete(head);
         head = p;
         no = p;
         pre = no;
@@ -74,24 +97,11 @@ void del(Node*& head, Node*& no, Node*& pre)
 
 
 
-int valid[maxn],p[maxn],h=0,p_num = 0,visit[maxn],new_p=0,en[maxn],en2[maxn];
+int valid[maxn],p[maxn],h=0,p_num = 0,visit[maxn],new_p=0,en[maxn],en2
+
+[maxn];
 char gang[10];
-struct Expression
-{
-    int error;
-    int start;
-    int end;
-    Expression();
-};
 
-
-
-Expression::Expression():
-error(0),
-start(0),
-end(0)
-{
-}
 
 
 Expression GetTemp(char*& Stream);
@@ -125,10 +135,6 @@ void errase(int start,int end)
     en[end] = 1;
     for(int i = 1; i <= h; i++)
     {
-        if(i==37)
-        {
-            puts("12");
-        }
         memset(visit,0,sizeof(visit));
         dfs(p[i], p[i]);
     }
@@ -138,10 +144,9 @@ void errase(int start,int end)
         {
             if (!valid[j -> point] || j -> data == '@' || !valid[i])
             {
-                printf("destroy %d %d %c\n",i,j -> point,j->data);
+                //printf("destroy %d %d %c\n",i,j -> point,j->data);
                 del(Head[i],j,pre);
                 //j = NULL;
-                print();
             }
             else
             {
@@ -225,25 +230,34 @@ Expression getExtern(char*& Stream)
     Expression ret;
     if (Is(Read,"["))
     {
-        char ww[] = "(a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)";
-        char WW[] = "(A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z)";
+        char ww[] =
+
+"(a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)";
+        char WW[] =
+
+"(A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z)";
         char num[] = "(0|1|2|3|4|5|6|7|8|9)";
-        if(Is(Read,"a") && Is(Read,"-") && Is(Read,"z") && Is(Read, "]"))
+        if(Is(Read,"a") && Is(Read,"-") && Is(Read,"z") && Is(Read,
+
+"]"))
         {
             char* ip = ww;
             ret = GetTemp(ip);
         }
-        else if(Is(Read,"A") && Is(Read,"-") && Is(Read,"Z") && Is(Read, "]"))
+        else if(Is(Read,"A") && Is(Read,"-") && Is(Read,"Z") && Is
+
+(Read, "]"))
         {
             char* ip = WW;
             ret = GetTemp(ip);
         }
-        else if(Is(Read,"0") && Is(Read,"-") && Is(Read,"9") && Is(Read,"]"))
+        else if(Is(Read,"0") && Is(Read,"-") && Is(Read,"9") && Is
+
+(Read,"]"))
         {
             char* ip = num;
             ret = GetTemp(ip);
         }
-        return ret;
     }
     else if(Is(Read, gg))
     {
@@ -258,6 +272,8 @@ Expression getExtern(char*& Stream)
         ret.error = 1;
         return ret;
     }
+    Stream = Read;
+    return ret;
 }
 
 
@@ -298,6 +314,7 @@ Expression GetTerm(char*& Stream)
         {
             ret.error =1;
         }
+        else ret = factor;
     }
     if(Is(Read,"*"))
     {
@@ -379,15 +396,12 @@ Expression GetExp(char*& Stream)
     Expression ret = GetTemp(Stream);
     print();
     errase(ret.start,ret.end);
-    print();
     Nfa_To_Dfa(ret.start);
     ret.start = 1;
-    printf("%d\n",node_num);
     destroy(Head);
-    //destroy(Head2);
-    printf("%d\n",node_num);
     memcpy(Head,Head2,sizeof(Head));
     memcpy(en,en2,sizeof(en));
+    print();
     return ret;
 }
 
@@ -418,16 +432,47 @@ bool match(Expression Re,char* Text)
 }
 
 
+
+
+
+
+
+
+
+class Exp
+{
+public:
+    Exp();
+    Expression GetExp(char*& Stream);
+    bool match(Expression Re,char* Text);
+
+private:
+    Node* Head[maxn];
+    Node* Head2[maxn];
+    void dfs(int start,int k);
+    void errase(int start,int end);
+    void Nfa_To_Dfa(int start);
+    bool Is(char*& Stream ,const char* str);
+    bool IsAlg(const char ch);
+    Expression getExtern(char*& Stream);
+    Expression GetTerm(char*& Stream);
+    Expression GetFactor(char*& Stream);
+};
+
+
 int main()
 {
     char ch[100],text[100];
     gets(ch);
+    char *pp = ch;
+    Expression u = GetExp(pp);
+    printf("%d\n",node_num);
     while(1)
     {
         gets(text);
-        char *pp = ch;
-        if(match(GetExp(pp),text))puts("match");else puts("error");
-        break;
+        if(match(u,text))puts("match");else puts("error");
+        //break;
     }
     return 0;
 }
+
